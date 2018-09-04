@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+#-*-encoding:utf-8-*-
+import prometheus_client
+from prometheus_client.core import CollectorRegistry
+from prometheus_client import Gauge
+from flask import Response,Flask
+import subprocess
+import argparse
+
+
+def counter(statusCode):
+    try:
+        p = subprocess.Popen(("tail -n 20000 {0} | grep '\- {1}' | wc -l").format(args.log,statusCode),shell=True,stdout=subprocess.PIPE)
+        return p.stdout.readline().strip()
+    except:
+        return 4444
+
+
+
+app = Flask(__name__)
+
+REGISTRY = CollectorRegistry(auto_describe=False)
+
+status_400 = Gauge("status_code_400","status_code counter is :",registry=REGISTRY)
+status_404 = Gauge("status_code_404","status_code counter is :",registry=REGISTRY)
+status_499 = Gauge("status_code_499","status_code counter is :",registry=REGISTRY)
+status_500 = Gauge("status_code_500","status_code counter is :",registry=REGISTRY)
+status_503 = Gauge("status_code_503","status_code counter is :",registry=REGISTRY)
+
+@app.route("/metrics")
+
+def statusReponse():
+    status_400.set(counter(200))
+    status_404.set(counter(404))
+    status_499.set(counter(499))
+    status_500.set(counter(500))
+    status_503.set(counter(503))
+    return  Response(prometheus_client.generate_latest(REGISTRY),mimetype="text/plain")
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='nginx exporter args server listen address and port and log path'
+    )
+    parser.add_argument(
+        '-e','--exporter',
+        dest="host",
+        required=False,
+        help='exporter linsten  address,default listen on 127.0.0.1',
+        default='127.0.0.1'
+    )
+    parser.add_argument(
+        '-p','--port',
+        dest="port",
+        required=False,
+        type=int,
+        help='exporter listen port,default port is 9119',
+        default=int(9119)
+    )
+    parser.add_argument(
+        '-l','--log',
+        dest="log",
+        required=True,
+        help='the log file that you want to monitor'
+    )
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    addr = args.host
+    port = args.port
+    app.run(host=addr,port=port)
