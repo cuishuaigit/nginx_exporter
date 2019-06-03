@@ -1,6 +1,6 @@
 # nginx_exporter
 
-nginx status exporter for prometheus.io,status_code:400,404,499,500,503.written by python.
+nginx status exporter for prometheus.io,status_code:400,401,403,404,413,499,500,502,503,504 written by python.
 
 
 # Usage
