@@ -4,7 +4,7 @@ nginx status exporter for prometheus.io,status_code:400,401,403,404,413,499,500,
 
 
 # Usage
-usage: exporter-demo.py [-h] [-e HOST] [-p PORT] -l LOG
+usage: nginx_exporter [-h] [-e HOST] [-p PORT] -l LOG
 
 nginx exporter args server listen address and port and log path
 
