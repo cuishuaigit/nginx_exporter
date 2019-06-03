@@ -49,6 +49,13 @@ nohup nginx_exporter -e 172.10.1.9 -p 9119 -l /data/nginx/access.log >/dev/null 
 
 &nbsp;&nbsp;&nbsp;-l: the log file that you want to monitor
 
+you also can run it with docker, just build the image according to Dockerfile.
+## Build image 
+docker build --no-cache -t fastop/nginx_exporter:alpine3.7 .
+
+## Run 
+docker run -d -it -p 9119:9119 fastop/nginx_exporter:alpine3.7 -e 0.0.0.0 --log /var/log/nginx/access.log 
+
 ## Configure prometheus
 \- job_name: 'nginx-exporter'
 
